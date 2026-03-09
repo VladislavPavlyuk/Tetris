@@ -1,12 +1,29 @@
+import { useEffect, useRef } from 'react'
 import { useTetris } from '../hooks/useTetris'
+import { useAuth } from '../contexts/AuthContext'
+import { postScore } from '../api/scores'
 import { ROWS, COLS } from '../types/tetris'
 import { TETROMINOES, ID_TO_COLOR } from '../constants/tetris'
+import Leaderboard from './Leaderboard'
 import './TetrisGame.css'
 
 const CELL_PX = 24
 
 export default function TetrisGame() {
   const { grid, activePiece, nextPiece, score, gameOver, reset } = useTetris()
+  const { user } = useAuth()
+  const scoreSentRef = useRef(false)
+
+  useEffect(() => {
+    if (gameOver && user && !scoreSentRef.current) {
+      scoreSentRef.current = true
+      postScore(score).catch(() => {})
+    }
+  }, [gameOver, user, score])
+
+  useEffect(() => {
+    if (!gameOver) scoreSentRef.current = false
+  }, [gameOver])
 
   return (
     <div className="tetris-game">
@@ -62,9 +79,10 @@ export default function TetrisGame() {
         {gameOver && (
           <div className="tetris-gameover">
             <p>Game Over</p>
-            <p>Score: {score}</p>
+            <p>Счёт: {score}</p>
+            <Leaderboard />
             <button type="button" onClick={reset}>
-              Play again
+              Играть снова
             </button>
           </div>
         )}

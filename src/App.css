@@ -5,8 +5,47 @@
   align-items: center;
 }
 
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 600px;
+  padding: 0.5rem 1rem;
+  box-sizing: border-box;
+}
+
 .app-title {
-  margin: 0.5rem 0;
-  font-size: 2rem;
+  margin: 0;
+  font-size: 1.5rem;
   font-weight: 600;
+}
+
+.app-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.app-username {
+  font-size: 0.9rem;
+  color: #aaa;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-btn {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.9rem;
+  background: #333;
+  color: #eee;
+  border: 1px solid #555;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.app-btn:hover {
+  background: #444;
 }
