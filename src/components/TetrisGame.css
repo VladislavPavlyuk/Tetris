@@ -1,0 +1,91 @@
+.tetris-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  min-height: 100vh;
+  background: #1a1a2e;
+  color: #eee;
+}
+
+.tetris-game .tetris-playfield-wrap {
+  position: relative;
+}
+
+.tetris-playfield {
+  display: grid;
+  background: #0f0f1a;
+  border: 2px solid #333;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.tetris-cell {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.tetris-cell-piece {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tetris-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tetris-next {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tetris-next-grid {
+  display: grid;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.tetris-next-grid > div {
+  border-radius: 2px;
+}
+
+.tetris-stats {
+  font-size: 1.1rem;
+}
+
+.tetris-gameover {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.tetris-gameover button {
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  background: #646cff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+}
+
+.tetris-gameover button:hover {
+  background: #535bf2;
+}
+
+.tetris-controls-hint {
+  font-size: 0.85rem;
+  color: #888;
+}

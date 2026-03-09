@@ -1,0 +1,12 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app-title {
+  margin: 0.5rem 0;
+  font-size: 2rem;
+  font-weight: 600;
+}
