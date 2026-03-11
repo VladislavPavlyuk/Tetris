@@ -16,11 +16,11 @@ authRouter.post('/register', async (req, res, next) => {
     const hash = await bcrypt.hash(password, 10)
     const conn = await pool.getConnection()
     try {
-      const [result] = await conn.query(
+      const result = await conn.query(
         'INSERT INTO users (email, password_hash, display_name) VALUES (?, ?, ?)',
         [email.trim().toLowerCase(), hash, displayName?.trim() || null]
       )
-      const insertId = (result as { insertId: number }).insertId
+      const insertId = Number((result as { insertId: number | bigint }).insertId)
       const emailLower = email.trim().toLowerCase()
       const token = signToken({ userId: insertId, email: emailLower })
       res.status(201).json({ token, user: { id: insertId, email: emailLower, displayName: displayName?.trim() || null } })
@@ -56,10 +56,11 @@ authRouter.post('/login', async (req, res, next) => {
         res.status(401).json({ error: 'Invalid email or password.' })
         return
       }
-      const u = user as { id: number; email: string; display_name: string | null }
+      const u = user as { id: number | bigint; email: string; display_name: string | null }
+      const userId = Number(u.id)
       const emailLower = u.email.toLowerCase()
-      const token = signToken({ userId: u.id, email: emailLower })
-      res.json({ token, user: { id: u.id, email: emailLower, displayName: u.display_name } })
+      const token = signToken({ userId, email: emailLower })
+      res.json({ token, user: { id: userId, email: emailLower, displayName: u.display_name } })
     } finally {
       conn.release()
     }

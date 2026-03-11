@@ -1,0 +1,41 @@
+# Deploy on QNAP NAS (TS-233). Use after loading tetris-app.tar.
+# Uses host network to avoid QNAP bridge/NAT errors (tetris_default network creation fails).
+# On NAS: docker load -i tetris-app.tar && docker compose -f docker-compose.nas.yml up -d
+services:
+  app:
+    image: tetris-app:latest
+    network_mode: host
+    environment:
+      PORT: 9090
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3308
+      DB_USER: tetris
+      DB_PASSWORD: ${DB_PASSWORD:-tetris}
+      DB_NAME: tetris
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: mariadb:11
+    network_mode: host
+    command: ["mariadbd", "--port=3308"]
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+      MARIADB_DATABASE: tetris
+      MARIADB_USER: tetris
+      MARIADB_PASSWORD: ${DB_PASSWORD:-tetris}
+    volumes:
+      - tetris_db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "export MYSQL_PWD=\"$$MARIADB_ROOT_PASSWORD\" && mysqladmin -h 127.0.0.1 -P 3308 -u root ping || exit 1"]
+      start_period: 60s
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  tetris_db:

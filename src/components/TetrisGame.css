@@ -60,6 +60,56 @@
   font-size: 1.1rem;
 }
 
+.tetris-btn-pause {
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background: #333;
+  color: #eee;
+  border: 1px solid #555;
+  border-radius: 6px;
+}
+
+.tetris-btn-pause:hover:not(:disabled) {
+  background: #444;
+}
+
+.tetris-btn-pause:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tetris-paused {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.tetris-paused p {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.tetris-paused button {
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  background: #646cff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+}
+
+.tetris-paused button:hover {
+  background: #535bf2;
+}
+
 .tetris-gameover {
   position: absolute;
   inset: 0;

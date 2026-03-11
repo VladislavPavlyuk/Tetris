@@ -11,7 +11,7 @@ import './TetrisGame.css'
 const CELL_PX = 24
 
 export default function TetrisGame() {
-  const { grid, activePiece, nextPiece, score, gameOver, reset } = useTetris()
+  const { grid, activePiece, nextPiece, score, gameOver, paused, togglePause, reset } = useTetris()
   const { user } = useAuth()
   const scoreSentRef = useRef(false)
   const [scoreError, setScoreError] = useState<string | null>(null)
@@ -40,6 +40,9 @@ export default function TetrisGame() {
           <NextPiecePreview piece={nextPiece} />
         </div>
         <div className="tetris-stats">Score: {score}</div>
+        <button type="button" className="tetris-btn-pause" onClick={togglePause} disabled={!!gameOver}>
+          {paused ? 'Resume' : 'Pause'}
+        </button>
       </aside>
       <div className="tetris-playfield-wrap">
         <div
@@ -83,6 +86,12 @@ export default function TetrisGame() {
             })
           )}
         </div>
+        {paused && !gameOver && (
+          <div className="tetris-paused">
+            <p>Paused</p>
+            <button type="button" onClick={togglePause}>Resume</button>
+          </div>
+        )}
         {gameOver && (
           <div className="tetris-gameover">
             <p>Game Over</p>
@@ -96,7 +105,7 @@ export default function TetrisGame() {
         )}
       </div>
       <div className="tetris-controls-hint">
-        ← → move · ↑ or X rotate CW · Z rotate CCW · ↓ soft drop · Space hard drop
+        ← → move · ↑ or X rotate CW · Z rotate CCW · ↓ soft drop · Space hard drop · P pause
       </div>
     </div>
   )

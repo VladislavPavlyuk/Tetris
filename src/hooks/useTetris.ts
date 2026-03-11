@@ -30,6 +30,7 @@ export function useTetris() {
   const [nextPiece, setNextPiece] = useState<ActivePiece>(getRandomPiece)
   const [score, setScore] = useState(0)
   const [gameOver, setGameOver] = useState(false)
+  const [paused, setPaused] = useState(false)
 
   /** Фиксирует переданную фигуру в сетке (или текущую activePiece, если piece не передан). */
   const lockPieceAt = useCallback(
@@ -49,8 +50,6 @@ export function useTetris() {
     [activePiece, grid, nextPiece]
   )
 
-  const lockPiece = useCallback(() => lockPieceAt(), [lockPieceAt])
-
   const movePieceDown = useCallback(() => {
     if (gameOver) return
     // Достигла дна или другой фигуры — фиксируем, дальше не двигаем
@@ -64,16 +63,18 @@ export function useTetris() {
     }
   }, [activePiece, grid, gameOver, lockPieceAt])
 
-  // Game loop: useEffect as game heartbeat
+  const togglePause = useCallback(() => setPaused((p) => !p), [])
+
+  // Game loop: useEffect as game heartbeat (stops when paused)
   useEffect(() => {
-    if (gameOver) return
+    if (gameOver || paused) return
     const dropInterval = setInterval(movePieceDown, DROP_MS)
     return () => clearInterval(dropInterval)
-  }, [activePiece, grid, gameOver, movePieceDown])
+  }, [activePiece, grid, gameOver, paused, movePieceDown])
 
   const move = useCallback(
     (dx: number, dy: number) => {
-      if (gameOver) return
+      if (gameOver || paused) return
       if (!isCollision(activePiece, grid, dx, dy)) {
         setActivePiece(prev => ({
           ...prev,
@@ -81,12 +82,12 @@ export function useTetris() {
         }))
       }
     },
-    [activePiece, grid, gameOver]
+    [activePiece, grid, gameOver, paused]
   )
 
   const rotate = useCallback(
     (cw: boolean) => {
-      if (gameOver) return
+      if (gameOver || paused) return
       const rotated = cw
         ? rotateMatrixCW(activePiece.shape)
         : rotateMatrixCCW(activePiece.shape)
@@ -99,11 +100,11 @@ export function useTetris() {
         }
       }
     },
-    [activePiece, grid, gameOver]
+    [activePiece, grid, gameOver, paused]
   )
 
   const hardDrop = useCallback(() => {
-    if (gameOver) return
+    if (gameOver || paused) return
     let dy = 0
     while (!isCollision(activePiece, grid, 0, dy + 1)) dy++
     const droppedPiece: ActivePiece = {
@@ -111,11 +112,16 @@ export function useTetris() {
       pos: { ...activePiece.pos, y: activePiece.pos.y + dy },
     }
     lockPieceAt(droppedPiece)
-  }, [activePiece, grid, gameOver, lockPieceAt])
+  }, [activePiece, grid, gameOver, paused, lockPieceAt])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (gameOver) return
+      if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') {
+        e.preventDefault()
+        if (!gameOver) setPaused((p) => !p)
+        return
+      }
+      if (gameOver || paused) return
       switch (e.key) {
         case 'ArrowLeft':
           e.preventDefault()
@@ -148,7 +154,7 @@ export function useTetris() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [gameOver, move, movePieceDown, rotate, hardDrop])
+  }, [gameOver, paused, move, movePieceDown, rotate, hardDrop])
 
   const reset = useCallback(() => {
     setGrid(createEmptyGrid())
@@ -156,6 +162,7 @@ export function useTetris() {
     setActivePiece(getRandomPiece())
     setScore(0)
     setGameOver(false)
+    setPaused(false)
   }, [])
 
   return {
@@ -164,6 +171,8 @@ export function useTetris() {
     nextPiece,
     score,
     gameOver,
+    paused,
+    togglePause,
     reset,
   }
 }
