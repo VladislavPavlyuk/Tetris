@@ -8,7 +8,7 @@ function AppContent() {
   const { user, logout, isReady } = useAuth()
   const [showAuth, setShowAuth] = useState(false)
 
-  if (!isReady) return <main className="app">Загрузка…</main>
+  if (!isReady) return <main className="app">Loading…</main>
 
   return (
     <main className="app">
@@ -19,12 +19,12 @@ function AppContent() {
             <>
               <span className="app-username">{user.displayName || user.email}</span>
               <button type="button" className="app-btn" onClick={logout}>
-                Выйти
+                Log out
               </button>
             </>
           ) : (
             <button type="button" className="app-btn" onClick={() => setShowAuth(true)}>
-              Войти
+              Log in
             </button>
           )}
         </div>

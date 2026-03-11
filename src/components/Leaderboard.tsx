@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getLeaderboard } from '../api/scores'
 import type { LeaderboardEntry } from '../api/scores'
+import { getApiErrorMessage } from '../api/errors'
 import './Leaderboard.css'
 
 export default function Leaderboard() {
@@ -11,17 +12,17 @@ export default function Leaderboard() {
   useEffect(() => {
     getLeaderboard()
       .then(setList)
-      .catch(() => setError('Не удалось загрузить рейтинг'))
+      .catch((err) => setError(getApiErrorMessage(err)))
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) return <div className="leaderboard-loading">Загрузка рейтинга…</div>
+  if (loading) return <div className="leaderboard-loading">Loading leaderboard…</div>
   if (error) return <div className="leaderboard-error">{error}</div>
-  if (list.length === 0) return <div className="leaderboard-empty">Пока нет результатов</div>
+  if (list.length === 0) return <div className="leaderboard-empty">No results yet</div>
 
   return (
     <div className="leaderboard">
-      <h4>Рейтинг (лучшие результаты)</h4>
+      <h4>Leaderboard (best scores)</h4>
       <ol className="leaderboard-list">
         {list.map((entry, i) => (
           <li key={`${entry.email}-${i}`}>

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getApiErrorMessage } from './errors'
 
 const baseURL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
 
@@ -18,6 +19,9 @@ api.interceptors.response.use(
       localStorage.removeItem('tetris_user')
       window.dispatchEvent(new Event('tetris_unauthorized'))
     }
-    return Promise.reject(err)
+    const message = getApiErrorMessage(err)
+    const out = err instanceof Error ? err : new Error(message)
+    ;(out as Error & { message: string }).message = message
+    return Promise.reject(out)
   }
 )

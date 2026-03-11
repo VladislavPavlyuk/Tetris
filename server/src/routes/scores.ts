@@ -4,12 +4,12 @@ import { authMiddleware } from '../middleware/auth.js'
 
 export const scoresRouter = Router()
 
-scoresRouter.post('/', authMiddleware, async (req, res) => {
+scoresRouter.post('/', authMiddleware, async (req, res, next) => {
   try {
     const userId = (req as unknown as { user: { userId: number } }).user.userId
     const score = Number(req.body?.score)
     if (!Number.isInteger(score) || score < 0) {
-      res.status(400).json({ error: 'Invalid score' })
+      res.status(400).json({ error: 'Invalid score value.' })
       return
     }
     const conn = await pool.getConnection()
@@ -20,12 +20,11 @@ scoresRouter.post('/', authMiddleware, async (req, res) => {
       conn.release()
     }
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Server error' })
+    next(err)
   }
 })
 
-scoresRouter.get('/leaderboard', async (_req, res) => {
+scoresRouter.get('/leaderboard', async (_req, res, next) => {
   try {
     const conn = await pool.getConnection()
     try {
@@ -42,7 +41,6 @@ scoresRouter.get('/leaderboard', async (_req, res) => {
       conn.release()
     }
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Server error' })
+    next(err)
   }
 })

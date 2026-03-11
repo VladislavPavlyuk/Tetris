@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTetris } from '../hooks/useTetris'
 import { useAuth } from '../contexts/AuthContext'
 import { postScore } from '../api/scores'
+import { getApiErrorMessage } from '../api/errors'
 import { ROWS, COLS } from '../types/tetris'
 import { TETROMINOES, ID_TO_COLOR } from '../constants/tetris'
 import Leaderboard from './Leaderboard'
@@ -13,16 +14,22 @@ export default function TetrisGame() {
   const { grid, activePiece, nextPiece, score, gameOver, reset } = useTetris()
   const { user } = useAuth()
   const scoreSentRef = useRef(false)
+  const [scoreError, setScoreError] = useState<string | null>(null)
 
   useEffect(() => {
     if (gameOver && user && !scoreSentRef.current) {
       scoreSentRef.current = true
-      postScore(score).catch(() => {})
+      setScoreError(null)
+      postScore(score)
+        .catch((err) => setScoreError(getApiErrorMessage(err)))
     }
   }, [gameOver, user, score])
 
   useEffect(() => {
-    if (!gameOver) scoreSentRef.current = false
+    if (!gameOver) {
+      scoreSentRef.current = false
+      setScoreError(null)
+    }
   }, [gameOver])
 
   return (
@@ -79,10 +86,11 @@ export default function TetrisGame() {
         {gameOver && (
           <div className="tetris-gameover">
             <p>Game Over</p>
-            <p>Счёт: {score}</p>
+            <p>Score: {score}</p>
+            {scoreError && <p className="tetris-gameover-error">{scoreError}</p>}
             <Leaderboard />
             <button type="button" onClick={reset}>
-              Играть снова
+              Play again
             </button>
           </div>
         )}

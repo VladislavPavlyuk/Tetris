@@ -85,6 +85,12 @@
   background: #535bf2;
 }
 
+.tetris-gameover-error {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #f66;
+}
+
 .tetris-controls-hint {
   font-size: 0.85rem;
   color: #888;
